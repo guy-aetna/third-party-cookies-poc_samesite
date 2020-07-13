@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <script>
+            async function login() {
+                const hasAcess = await enableThirdPartyCookie();
+
+                console.log('hasAcess', hasAcess);
+
+                var iframe = document.createElement('iframe');
+                iframe.src = "https://notsamesite.com:3002/iframe";
+                iframe.sandbox = "allow-storage-access-by-user-activation allow-scripts allow-same-origin"
+                return document.body.appendChild(iframe);
+            }
+
+            async function enableThirdPartyCookie() {
+                const hasAccess = await document.hasStorageAccess();
+                
+                if (!hasAccess) {
+                    return document.requestStorageAccess()
+                }
+
+                return hasAccess;
+            }
+        </script>
+    </head>
+    <body>
+        <!-- <body>
+            <button onclick="login()">Login</button>
+        </body> -->
+
+        <iframe sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin" src="https://notsamesite.com:3002/iframe"></iframe>
+    </body>
+</html>
