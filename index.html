@@ -1,33 +1,46 @@
 <html>
-    <head>
-        <script>
-            async function login() {
-                const hasAcess = await enableThirdPartyCookie();
+  <head>
+    <script>
+      function hasStorageAPI() {
+        return (
+          typeof document.requestStorageAccess === "function" &&
+          typeof document.requestStorageAccess === "function"
+        );
+      }
 
-                console.log('hasAcess', hasAcess);
+      function requestThirdPartyCookie() {
+        return fetch(`https://notsamesite.com:3002/redirect_thirdpartycookie`);
+      }
 
-                var iframe = document.createElement('iframe');
-                iframe.src = "https://notsamesite.com:3002/iframe";
-                iframe.sandbox = "allow-storage-access-by-user-activation allow-scripts allow-same-origin"
-                return document.body.appendChild(iframe);
-            }
+      async function setThirdPartyCookieWithPermission(requestType) {
+        await document
+          .requestStorageAccess()
+          .then((res) => console.log("access granted", res))
+          .catch((err) => console.log("access denied", err));
 
-            async function enableThirdPartyCookie() {
-                const hasAccess = await document.hasStorageAccess();
-                
-                if (!hasAccess) {
-                    return document.requestStorageAccess()
-                }
+        return requestThirdPartyCookie();
+      }
 
-                return hasAccess;
-            }
-        </script>
-    </head>
+      async function iframe() {
+        var iframe = document.createElement("iframe");
+        iframe.src = "https://notsamesite.com:3002/iframe";
+        iframe.sandbox =
+          "allow-storage-access-by-user-activation allow-scripts allow-same-origin";
+        return document.body.appendChild(iframe);
+      }
+
+      function redirect() {
+        return window.location.replace("https://notsamesite.com:3002/redirect");
+      }
+    </script>
+  </head>
+  <body>
     <body>
-        <!-- <body>
-            <button onclick="login()">Login</button>
-        </body> -->
-
-        <iframe sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin" src="https://notsamesite.com:3002/iframe"></iframe>
+      <h1>Set a third party cookie by either using an iframe or redirect</h1>
+      <button onclick="iframe()">Iframe</button>
+      <button onclick="redirect()">Redirect</button>
     </body>
+    <!-- 
+        <iframe sandbox="allow-storage-access-by-user-activation allow-scripts allow-same-origin" src="https://notsamesite.com:3002/iframe"></iframe> -->
+  </body>
 </html>
